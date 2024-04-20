@@ -3,6 +3,8 @@ import * as THREE from 'three';
 // Importing OrbitControls from 'three' library which allows camera to orbit around a target
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
+import sky from '../img/sky.jpg';
+
 
 
 // Creating a WebGL renderer
@@ -107,6 +109,8 @@ scene.fog = new THREE.Fog(0xFFFFFF, 1, 200);
 
 // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
 // scene.add(spotLightHelper);
+const textureLoader = new THREE.TextureLoader();
+scene.background = textureLoader.load(sky);
 
 const gui = new dat.GUI();
 const options = {
