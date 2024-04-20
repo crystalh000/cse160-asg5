@@ -41,65 +41,83 @@ const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.inner
 // Creating orbit controls for the camera
 const orbit = new OrbitControls(camera, renderer.domElement);
 
-// Creating an axes helper with size 5 and adding it to the scene
-const axesHelper = new THREE.AxesHelper( 5 );
-scene.add( axesHelper );
+// // Creating an axes helper with size 5 and adding it to the scene
+// const axesHelper = new THREE.AxesHelper( 5 );
+// scene.add( axesHelper );
 
 // Setting the camera position
-camera.position.set(-10,30,30);
+camera.position.set(-10,5,150);
 // Updating the orbit controls
 orbit.update();
 
 // Creating a box geometry
-const geometry = new THREE.BoxGeometry();
+const geometry = new THREE.OctahedronGeometry();
 // Creating a basic material for the box with color grgit seen
-const boxMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );
+const diamondMaterial = new THREE.MeshPhongMaterial( { 
+    color: 0xadd8e6,
+    transparent: true,
+    opacity: 0.5,
+    shininess: 100,
+    specular: 0xffffff
+
+} );
 // Creating a mesh with the box geometry and material
-const box = new THREE.Mesh( geometry, boxMaterial );
+const diamond = new THREE.Mesh( geometry, diamondMaterial );
+
+// Scaling the diamond to make it bigger and skinnier
+diamond.scale.set(2, 4, 2);
 // Adding the box to the scene
-scene.add( box );
-const planeGeometry = new THREE.PlaneGeometry( 30, 30 );
-const planeMaterial = new THREE.MeshStandardMaterial({color: 0xFFFFFF, side: THREE.DoubleSide});
-const plane = new THREE.Mesh( planeGeometry, planeMaterial );
-scene.add( plane );
-plane.rotation.x = - Math.PI / 2;
-plane.receiveShadow = true;
+scene.add( diamond );
+// const planeGeometry = new THREE.PlaneGeometry( 30, 30 );
+// const planeMaterial = new THREE.MeshStandardMaterial({color: 0xFFFFFF, side: THREE.DoubleSide});
+// const plane = new THREE.Mesh( planeGeometry, planeMaterial );
+// scene.add( plane );
+// plane.rotation.x = - Math.PI / 2;
+// plane.receiveShadow = true;
 
-const gridHelper = new THREE.GridHelper( 30, 30 );
-scene.add( gridHelper );
+// const gridHelper = new THREE.GridHelper( 30, 30 );
+// scene.add( gridHelper );
 
-const sphereGeometry = new THREE.SphereGeometry(4,50,50);
+const sphereGeometry = new THREE.SphereGeometry(2,4,4);
 const sphereMaterial = new THREE.MeshPhongMaterial({color: 0x0000FF, wireframe: false});
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 scene.add(sphere);
 sphere.position.set(-10, 10,0);
 sphere.castShadow = true;
 
+// Create another sphere
+const sphereGeometry2 = new THREE.SphereGeometry(2,4,4);
+const sphereMaterial2 = new THREE.MeshPhongMaterial({color: 0xFFFF00, wireframe: false});
+const sphere3 = new THREE.Mesh(sphereGeometry2, sphereMaterial2);
+scene.add(sphere3);
+sphere.position.set(-10, 10,0);
+sphere.castShadow = true;
 
-// Create a target object and position it in the scene
-const targetGeometry = new THREE.SphereGeometry();
-const targetMaterial = new THREE.MeshStandardMaterial({color: 0xFF0000});
-const target = new THREE.Mesh(targetGeometry, targetMaterial);
 
-target.position.set(0, 0, 0);
-scene.add(target);
+// // Create a target object and position it in the scene
+// const targetGeometry = new THREE.SphereGeometry();
+// const targetMaterial = new THREE.MeshStandardMaterial({color: 0xFF0000});
+// const target = new THREE.Mesh(targetGeometry, targetMaterial);
+
+// target.position.set(0, 0, 0);
+// scene.add(target);
 
 
 // adding an ambient light
 const ambientLight = new THREE.AmbientLight(0xFFFFFF,2.0);
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 2.0);
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1.0);
 scene.add(directionalLight);
-directionalLight.position.set(-30,50,0);
+directionalLight.position.set(0,10,10);
 directionalLight.castShadow = true;
 directionalLight.shadow.camera.bottom = -12;
 
-const dLightHelper = new THREE.DirectionalLightHelper(directionalLight,5);
-scene.add(dLightHelper);
+// const dLightHelper = new THREE.DirectionalLightHelper(directionalLight,5);
+// scene.add(dLightHelper);
 
-const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-scene.add(dLightShadowHelper);
+// const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+// scene.add(dLightShadowHelper);
 
 // Adding fog
 // scene.fog = new THREE.Fog(0xFFFFFF, 10, 200);
@@ -136,7 +154,7 @@ scene.background = textureLoader.load(sky);
 // scene.add(box2);
 // box2.position.set(0,15,10);
 
-const sphere2Geometry = new THREE.SphereGeometry(4);
+// const sphere2Geometry = new THREE.SphereGeometry(4);
 
 // const vShader = `
 //     void main() {
@@ -150,15 +168,15 @@ const sphere2Geometry = new THREE.SphereGeometry(4);
 //     }
 // `;
 
-const sphere2Material = new THREE.ShaderMaterial({
-    vertexShader: document.getElementById('vertexShader').textContent,
-    fragmentShader:document.getElementById('fragmentShader').textContent
+// const sphere2Material = new THREE.ShaderMaterial({
+//     vertexShader: document.getElementById('vertexShader').textContent,
+//     fragmentShader:document.getElementById('fragmentShader').textContent
 
-});
+// });
 
-const sphere2 = new THREE.Mesh(sphere2Geometry, sphere2Material);
-scene.add(sphere2);
-sphere2.position.set(-5,10,10);
+// const sphere2 = new THREE.Mesh(sphere2Geometry, sphere2Material);
+// scene.add(sphere2);
+// sphere2.position.set(-5,10,10);
 
 
 // Load the GLTF model
@@ -170,7 +188,7 @@ assetLoader.load(islandURL.href, function(gltf) {
     model.scale.set(0.1, 0.1, 0.1); // Adjust as needed
 
     // Adjust the position of the model
-    model.position.set(0, 0, 0); // Adjust as needed
+    model.position.set(40, 0, -20); // Adjust as needed
 
     model.traverse((object) => {
         console.log(object.name);
@@ -251,11 +269,20 @@ let step = 0;
 // Function to animate the box
 function animate(time) {
     // Rotating the box in x and y direction based on time
-    box.rotation.x = time / 1000;
-    box.rotation.y = time / 1000;
+    diamond.rotation.y = time / 1000;
     // Rendering the scene with the camera
     step += options.speed;
-    sphere.position.y = 10* Math.abs(Math.sin(step));
+    // sphere.position.y = 10* Math.abs(Math.sin(step)) + 13;
+
+    // making an orbit
+    const radius = 80;
+    sphere.position.x = radius * Math.cos(step);
+    sphere.position.z = radius * Math.sin(step);
+
+    const radius2 = 70;
+    sphere3.position.x = radius2 * Math.cos(step);
+    sphere3.position.z = radius2 * -Math.sin(step); // Note the negative sign
+
     renderer.render( scene, camera );
 }
 
