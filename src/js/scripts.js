@@ -4,8 +4,13 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
 import sky from '../img/sky.jpg';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+// import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+// import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 
+const islandURL = new URL('../assets/floating-islands.glb', import.meta.url);
 
+// Low poly floating islands by vanAchen [CC-BY] via Poly Pizza
 
 // Creating a WebGL renderer
 const renderer = new THREE.WebGLRenderer();
@@ -64,7 +69,7 @@ const gridHelper = new THREE.GridHelper( 30, 30 );
 scene.add( gridHelper );
 
 const sphereGeometry = new THREE.SphereGeometry(4,50,50);
-const sphereMaterial = new THREE.MeshStandardMaterial({color: 0x0000FF, wireframe: false});
+const sphereMaterial = new THREE.MeshPhongMaterial({color: 0x0000FF, wireframe: false});
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 scene.add(sphere);
 sphere.position.set(-10, 10,0);
@@ -81,10 +86,10 @@ scene.add(target);
 
 
 // adding an ambient light
-const ambientLight = new THREE.AmbientLight(0xFFFFFF,1.5);
+const ambientLight = new THREE.AmbientLight(0xFFFFFF,2.0);
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 2.0);
 scene.add(directionalLight);
 directionalLight.position.set(-30,50,0);
 directionalLight.castShadow = true;
@@ -97,7 +102,7 @@ const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera
 scene.add(dLightShadowHelper);
 
 // Adding fog
-scene.fog = new THREE.Fog(0xFFFFFF, 1, 200);
+// scene.fog = new THREE.Fog(0xFFFFFF, 10, 200);
 
 // const spotLight = new THREE.SpotLight(0xFFFFFF, 1.5);
 // scene.add(spotLight);
@@ -111,6 +116,90 @@ scene.fog = new THREE.Fog(0xFFFFFF, 1, 200);
 // scene.add(spotLightHelper);
 const textureLoader = new THREE.TextureLoader();
 scene.background = textureLoader.load(sky);
+
+// const cubeTextureLoader = new THREE.CubeTextureLoader();
+// scene.background= cubeTextureLoader.load([
+//     sky,
+//     sky,
+//     sky,
+//     sky,
+//     sky,
+//     sky
+// ]);
+
+// const box2Geometry = new THREE.BoxGeometry(4,4,4);
+// const box2Material = new THREE.MeshStandardMaterial({
+//     // color: 0x00FF00
+//     map: textureLoader.load(sky)
+// });
+// const box2 = new THREE.Mesh(box2Geometry, box2Material);
+// scene.add(box2);
+// box2.position.set(0,15,10);
+
+const sphere2Geometry = new THREE.SphereGeometry(4);
+
+// const vShader = `
+//     void main() {
+//         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+//     }   
+// `;
+
+// const fShader = `
+//     void main() {
+//         gl_FragColor = vec4(0.5, 0.5, 1.0, 1.0);
+//     }
+// `;
+
+const sphere2Material = new THREE.ShaderMaterial({
+    vertexShader: document.getElementById('vertexShader').textContent,
+    fragmentShader:document.getElementById('fragmentShader').textContent
+
+});
+
+const sphere2 = new THREE.Mesh(sphere2Geometry, sphere2Material);
+scene.add(sphere2);
+sphere2.position.set(-5,10,10);
+
+
+// Load the GLTF model
+const assetLoader = new GLTFLoader();
+assetLoader.load(islandURL.href, function(gltf) {
+    const model = gltf.scene;
+    scene.add(model);
+    // Adjust the size of the model
+    model.scale.set(0.1, 0.1, 0.1); // Adjust as needed
+
+    // Adjust the position of the model
+    model.position.set(0, 0, 0); // Adjust as needed
+
+    model.traverse((object) => {
+        console.log(object.name);
+    });
+}, undefined, function(error) {
+    console.error(error);
+});
+
+
+
+// // Load the Obj Model
+// const objLoader = new OBJLoader();
+
+// objLoader.load('assets/floating-islands/island_scene_flattened.obj', (root) => {
+//     scene.add(root);
+// });
+
+// const mtlLoader = new MTLLoader();
+// mtlLoader.load('assets/floating-islands/island_scene_flattened.mtl', (mtl) => {
+//     mtl.preload();
+//     objLoader.setMaterials(mtl);
+//     objLoader.load('assets/floating-islands/island_scene_flattened.obj', (root) => {
+//       scene.add(root);
+//     });
+// });
+
+
+
+
 
 const gui = new dat.GUI();
 const options = {
@@ -172,3 +261,9 @@ function animate(time) {
 
 // Setting the animation loop to the animate function
 renderer.setAnimationLoop( animate );
+
+window.addEventListener('resize', function() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
