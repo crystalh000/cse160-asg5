@@ -1,4 +1,12 @@
 // vite.config.js
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+
 export default {
-    base: "/cse160-asg5/"
+  publicDir: "src",
+  base: "/cse160-asg5/",
+  build: {
+    rollupOptions: {
+      plugins: [nodeResolve({ browser: true })],
+    },
+  },
 };
