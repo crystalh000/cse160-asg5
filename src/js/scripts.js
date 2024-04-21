@@ -4,13 +4,17 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
 import sky from '../img/sky.jpg';
+import rock from '../img/rock.jpg';
+
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 // import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 // import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 
 const islandURL = new URL('../assets/floating-islands.glb', import.meta.url);
+const airplaneURL = new URL('../assets/Airplane.glb', import.meta.url);
 
 // Low poly floating islands by vanAchen [CC-BY] via Poly Pizza
+// Airplane by Poly by Google [CC-BY] via Poly Pizza
 
 // Creating a WebGL renderer
 const renderer = new THREE.WebGLRenderer();
@@ -78,11 +82,25 @@ scene.add( diamond );
 // const gridHelper = new THREE.GridHelper( 30, 30 );
 // scene.add( gridHelper );
 
-const sphereGeometry = new THREE.SphereGeometry(2,4,4);
-const sphereMaterial = new THREE.MeshPhongMaterial({color: 0x0000FF, wireframe: false});
+// const sphereGeometry = new THREE.SphereGeometry(2,4,4);
+// const sphereMaterial = new THREE.MeshPhongMaterial({color: 0x0000FF, wireframe: false});
+// const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+// scene.add(sphere);
+// sphere.position.set(-10, 10,0);
+// sphere.castShadow = true;
+
+const sphereGeometry = new THREE.SphereGeometry(2, 4, 4);
+
+// Load the texture
+const textureLoader = new THREE.TextureLoader();
+const rockTexture = textureLoader.load(rock); // Replace with your texture path
+
+// Apply the texture to the material
+const sphereMaterial = new THREE.MeshPhongMaterial({ map: rockTexture, wireframe: false });
+
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 scene.add(sphere);
-sphere.position.set(-10, 10,0);
+sphere.position.set(-10, 10, 0);
 sphere.castShadow = true;
 
 // Create another sphere
@@ -90,8 +108,9 @@ const sphereGeometry2 = new THREE.SphereGeometry(2,4,4);
 const sphereMaterial2 = new THREE.MeshPhongMaterial({color: 0xFFFF00, wireframe: false});
 const sphere3 = new THREE.Mesh(sphereGeometry2, sphereMaterial2);
 scene.add(sphere3);
-sphere.position.set(-10, 10,0);
-sphere.castShadow = true;
+sphere3.position.set(-10, 10,0);
+sphere3.castShadow = true;
+
 
 
 // // Create a target object and position it in the scene
@@ -132,7 +151,7 @@ directionalLight.shadow.camera.bottom = -12;
 
 // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
 // scene.add(spotLightHelper);
-const textureLoader = new THREE.TextureLoader();
+// const textureLoader = new THREE.TextureLoader();
 scene.background = textureLoader.load(sky);
 
 // const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -148,11 +167,12 @@ scene.background = textureLoader.load(sky);
 // const box2Geometry = new THREE.BoxGeometry(4,4,4);
 // const box2Material = new THREE.MeshStandardMaterial({
 //     // color: 0x00FF00
-//     map: textureLoader.load(sky)
+//     map: textureLoader.load(flowers)
 // });
+
 // const box2 = new THREE.Mesh(box2Geometry, box2Material);
 // scene.add(box2);
-// box2.position.set(0,15,10);
+// box2.position.set(-45,-15,10);
 
 // const sphere2Geometry = new THREE.SphereGeometry(4);
 
@@ -193,6 +213,22 @@ assetLoader.load(islandURL.href, function(gltf) {
     model.traverse((object) => {
         console.log(object.name);
     });
+}, undefined, function(error) {
+    console.error(error);
+});
+
+// load the plane model 
+// Load the GLTF model
+let plane; 
+assetLoader.load(airplaneURL.href, function(gltf) {
+    plane = gltf.scene;
+    scene.add(plane);
+    // Adjust the size of the model
+    plane.scale.set(0.08, 0.08, 0.08); // Adjust as needed
+
+    // Adjust the position of the model
+    plane.position.set(70, 20, 50); // Adjust as needed
+
 }, undefined, function(error) {
     console.error(error);
 });
@@ -282,6 +318,16 @@ function animate(time) {
     const radius2 = 70;
     sphere3.position.x = radius2 * Math.cos(step);
     sphere3.position.z = radius2 * -Math.sin(step); // Note the negative sign
+
+    if (plane) {
+        const radius = 100;
+        plane.position.x = radius * Math.cos(time / 2000);
+        plane.position.z = radius * Math.sin(time / 2000);
+        
+
+
+    }
+
 
     renderer.render( scene, camera );
 }
