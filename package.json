@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "predeploy": "parcel build src/asg5.html",
+    "deploy": "gh-pages -d dist"
+  },
+  "dependencies": {
+    "dat.gui": "^0.7.9",
+    "three": "^0.163.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.1",
+    "vite": "^5.2.10"
+  }
+}
