@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "predeploy": "parcel build src/asg5.html",
+    "predeploy": "npx vite build",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
