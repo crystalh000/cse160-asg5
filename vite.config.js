@@ -9,4 +9,7 @@ export default {
       plugins: [nodeResolve({ browser: true })],
     },
   },
+  optimizeDeps: {
+    include: ["three"]
+  }
 };
